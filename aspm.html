@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureCode - ASPM Security</title>
+
+  <style>
+   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg: #070b18;
+    --panel: #0c1428;
+    --panel2: #101e39;
+    --blue: #4385ff;
+    --cyan: #32d9ff;
+    --purple: #9270ff;
+    --text: #f2f6ff;
+    --muted: #91a3c5;
+    --border: rgba(117, 153, 220, 0.22);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Inter', Arial, sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(ellipse at 10% 0%, rgba(50, 95, 210, .17), transparent 42%),
+        radial-gradient(ellipse at 90% 100%, rgba(112, 65, 220, .13), transparent 40%),
+        var(--bg);
+}
+
+header {
+    min-height: 76px;
+    padding: 16px 5%;
+    border-bottom: 1px solid var(--border);
+    background: rgba(9, 16, 34, .92);
+    backdrop-filter: blur(18px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+header b {
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -.4px;
+    background: linear-gradient(100deg, #fff, #85baff, #a99aff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+button {
+    padding: 11px 17px;
+    border: 1px solid rgba(100, 151, 255, .45);
+    border-radius: 9px;
+    background: linear-gradient(110deg, #2864d8, #6047c8);
+    color: #fff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .25s, box-shadow .25s, filter .25s;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 0 24px rgba(67, 133, 255, .24);
+    filter: brightness(1.12);
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+main {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 48px 28px 75px;
+}
+
+h1 {
+    margin: 0 0 12px;
+    font-size: clamp(29px, 4vw, 42px);
+    font-weight: 800;
+    letter-spacing: -1.2px;
+    background: linear-gradient(100deg, #fff, #9ac6ff, #b5a4ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: riseIn .55s ease both;
+}
+
+h2 {
+    margin-top: 0;
+    font-size: 22px;
+    letter-spacing: -.4px;
+}
+
+h3 {
+    font-size: 16px;
+}
+
+.muted {
+    color: var(--muted);
+    line-height: 1.8;
+    font-size: 13px;
+}
+
+.box {
+    margin: 25px 0;
+    padding: 26px;
+    background: linear-gradient(145deg, rgba(17, 29, 56, .96), rgba(10, 18, 37, .96));
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 14px 38px rgba(0, 0, 0, .13);
+    animation: riseIn .6s ease both;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.feature {
+    padding: 20px 17px;
+    min-width: 0;
+    background: rgba(7, 16, 35, .75);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    transition: transform .25s, border-color .25s, background .25s;
+}
+
+.feature:hover {
+    transform: translateY(-4px);
+    border-color: rgba(77, 151, 255, .65);
+    background: rgba(24, 42, 79, .85);
+}
+
+.feature b {
+    color: #e7efff;
+    font-size: 14px;
+}
+
+.feature p {
+    margin-bottom: 0;
+    font-size: 12px;
+}
+
+label {
+    display: block;
+    margin: 18px 0 8px;
+    color: #c9d7f3;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+textarea,
+select {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 8px 0 18px;
+    padding: 15px;
+    background: #080f22;
+    color: #eaf2ff;
+    border: 1px solid rgba(104, 144, 215, .35);
+    border-radius: 11px;
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.7;
+    outline: none;
+    transition: border-color .25s, box-shadow .25s;
+}
+
+textarea {
+    min-height: 250px;
+    resize: vertical;
+    font-family: Consolas, 'Courier New', monospace;
+    tab-size: 2;
+}
+
+textarea::placeholder {
+    color: #65789d;
+}
+
+textarea:focus,
+select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(67, 133, 255, .12);
+}
+
+select option {
+    background: #0c1428;
+    color: white;
+}
+
+#scanBtn {
+    background: linear-gradient(110deg, #2864d8, #367de8);
+}
+
+#aiScanBtn {
+    background: linear-gradient(110deg, #6845ce, #874fda);
+    border-color: rgba(177, 132, 255, .4);
+}
+
+#clearBtn {
+    background: #182743 !important;
+    border-color: var(--border);
+}
+
+#status {
+    margin-top: 17px;
+    padding: 12px 14px;
+    background: rgba(6, 13, 29, .65);
+    border: 1px solid rgba(117, 153, 220, .13);
+    border-radius: 9px;
+}
+
+#results {
+    margin-top: 35px;
+    animation: riseIn .5s ease both;
+}
+
+#results[hidden] {
+    display: none !important;
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 13px;
+    margin: 22px 0;
+}
+
+.count {
+    padding: 18px;
+    background: rgba(14, 27, 52, .92);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.count strong {
+    display: block;
+    margin-top: 9px;
+    color: #f3f6ff;
+    font-size: 29px;
+    font-weight: 800;
+}
+
+.count:nth-child(1) strong {
+    color: #ff727e;
+}
+
+.count:nth-child(2) strong {
+    color: #ff9b76;
+}
+
+.count:nth-child(3) strong {
+    color: #ffd166;
+}
+
+.count:nth-child(4) strong {
+    color: #64d7ff;
+}
+
+.count:nth-child(5) strong {
+    color: #a99aff;
+}
+
+#findings.box {
+    padding: 22px;
+}
+
+.finding {
+    padding: 20px;
+    margin: 14px 0;
+    background: rgba(7, 15, 32, .88);
+    border: 1px solid var(--border);
+    border-left: 3px solid #4385ff;
+    border-radius: 12px;
+    overflow-wrap: anywhere;
+    transition: background .25s, transform .25s;
+}
+
+.finding:hover {
+    background: rgba(18, 31, 59, .96);
+    transform: translateX(3px);
+}
+
+.finding:has(.critical),
+.finding:has(.high) {
+    border-left-color: #ff727e;
+}
+
+.finding:has(.medium) {
+    border-left-color: #ffd166;
+}
+
+.finding:has(.low),
+.finding:has(.info) {
+    border-left-color: #64d7ff;
+}
+
+.severity {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .8px;
+}
+
+.critical,
+.high {
+    color: #ff858e;
+}
+
+.medium {
+    color: #ffd166;
+}
+
+.low,
+.info {
+    color: #7dd3fc;
+}
+
+.finding h3 {
+    color: #eaf1ff;
+    margin: 12px 0;
+}
+
+.finding p {
+    color: #a8b8d7;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+@keyframes riseIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 850px) {
+    .features {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .summary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 14px;
+        align-items: flex-start;
+    }
+
+    header b {
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    header button {
+        padding: 9px 10px;
+        white-space: nowrap;
+        font-size: 11px;
+    }
+
+    main {
+        padding: 32px 15px 50px;
+    }
+
+    .box {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .features {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .feature {
+        padding: 15px 12px;
+    }
+
+    .summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    textarea {
+        min-height: 210px;
+    }
+
+    #scanBtn,
+    #aiScanBtn,
+    #clearBtn {
+        margin: 4px 3px 5px 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+    }
+}
+  </style>
+</head>
+
+<body>
+<header>
+  <b>🔐 SecureCode — ASPM Security</b>
+  <button onclick="location.href='dashboard.html'">← Dashboard</button>
+</header>
+
+<main>
+  <h1>ASPM Security Scanner</h1>
+  <p class="muted">
+    Check source code for common security risks before committing or deploying.
+  </p>
+
+  <div class="box">
+    <div class="features">
+      <div class="feature">🛡️ <b>SAST</b><p class="muted">Source-code pattern checks</p></div>
+      <div class="feature">🔑 <b>Secret Detection</b><p class="muted">Possible embedded credentials</p></div>
+      <div class="feature">⚠️ <b>Vulnerability Checks</b><p class="muted">Risky code patterns</p></div>
+      <div class="feature">📦 <b>Dependency Analysis</b><p class="muted">Package manifest presence check</p></div>
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>Scan your code</h2>
+    <label for="language">Programming language</label>
+    <select id="language">
+      <option value="auto">Auto detect / mixed code</option>
+      <option value="javascript">JavaScript / Node.js</option>
+      <option value="php">PHP</option>
+      <option value="python">Python</option>
+      <option value="java">Java</option>
+      <option value="sql">SQL</option>
+      <option value="html">HTML</option>
+    </select>
+
+    <label for="source">Paste source code or package.json content</label>
+    <textarea id="source" spellcheck="false"
+      placeholder="Paste code here...&#10;&#10;Example: query = 'SELECT * FROM users WHERE name=' + username;"></textarea>
+
+    <button id="scanBtn">🔍 Run Security Scan</button>
+    <button id="aiScanBtn">🤖 AI Security Analysis</button>
+    <button id="clearBtn" style="background:#29456b">Clear</button>
+    <p id="status" class="muted" aria-live="polite">
+      This first version runs local pattern checks in your browser.
+    </p>
+  </div>
+
+  <section id="results" hidden>
+    <button id="downloadReportBtn" type="button">
+  Download Security Report
+</button>
+    <h2>Scan Report</h2>
+    <p id="scanNote" class="muted"></p>
+
+    <div class="summary">
+      <div class="count">Critical<strong id="criticalCount">0</strong></div>
+      <div class="count">High<strong id="highCount">0</strong></div>
+      <div class="count">Medium<strong id="mediumCount">0</strong></div>
+      <div class="count">Low<strong id="lowCount">0</strong></div>
+      <div class="count">Total<strong id="totalCount">0</strong></div>
+    </div>
+
+    <div id="findings" class="box"></div>
+  </section>
+</main>
+
+<script>
+  const source = document.getElementById("source");
+  const language = document.getElementById("language");
+  const scanBtn = document.getElementById("scanBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const status = document.getElementById("status");
+  const results = document.getElementById("results");
+  const findingsBox = document.getElementById("findings");
+    let latestFindings = [];
+
+  // These are heuristic checks, not a complete security audit.
+ // Heuristic scanner: findings require validation.
+  function scanCode(code) {
+    const lines = code.split(/\r?\n/);
+    const findings = [];
+
+    function add(severity, title, line, evidence, fix) {
+      findings.push({ severity, title, line, evidence, fix });
+    }
+
+    const rules = [
+      {
+        severity: "High",
+        title: "Possible hardcoded credential",
+        regex: /\b(?:password|passwd|secret|api[_-]?key|access[_-]?token)\b\s*[:=]\s*["'`][^"'`]{4,}["'`]/i,
+        fix: "Move secrets into environment variables or a secrets manager. Rotate exposed real credentials."
+      },
+      {
+        severity: "High",
+        title: "Possible SQL injection",
+        regex: /(?:SELECT|INSERT|UPDATE|DELETE)\b.{0,250}(?:\+\s*(?:req\.|request\.|input|userInput|user_input|\$[a-z_])|\$\{|\s%\s*[a-z_$])/i,
+        fix: "Use prepared statements or parameterized queries. Never concatenate untrusted input into SQL."
+      },
+      {
+        severity: "High",
+        title: "Possible unsafe dynamic execution",
+        regex: /\beval\s*\(|\bnew\s+Function\s*\(|\bexec\s*\(\s*(?:request|req\.|input|user_input)/i,
+        fix: "Avoid evaluating untrusted data as code. Use safe parsing and allowlisted operations."
+      },
+      {
+        severity: "High",
+        title: "Possible command injection",
+        regex: /\b(?:exec|execSync|execFileSync|system|shell_exec|passthru)\s*\([^;\n]*(?:req\.|request\.|userInput|user_input|query\[)/i,
+        fix: "Avoid shell commands with user-controlled input. Prefer APIs that do not invoke a shell and validate arguments."
+      },
+      {
+        severity: "High",
+        title: "Possible unsafe deserialization",
+        regex: /\b(?:pickle\.loads|yaml\.unsafe_load|unserialize)\s*\(/i,
+        fix: "Do not deserialize untrusted data using unsafe object deserializers. Use safe formats and loaders."
+      },
+      {
+        severity: "Medium",
+        title: "Possible disabled TLS validation",
+        regex: /rejectUnauthorized\s*:\s*false|NODE_TLS_REJECT_UNAUTHORIZED\s*=\s*["']?0/i,
+        fix: "Keep certificate validation enabled, especially in production."
+      },
+      {
+        severity: "Medium",
+        title: "Possible unsafe HTML insertion",
+        regex: /\.innerHTML\s*=|\.outerHTML\s*=|document\.write\s*\(/i,
+        fix: "Avoid inserting untrusted content as HTML. Prefer textContent or a trusted HTML sanitizer."
+      },
+      {
+        severity: "Medium",
+        title: "Possible weak hash algorithm",
+        regex: /\b(?:md5|sha1)\s*\(/i,
+        fix: "For passwords, use Argon2id or bcrypt. For other cryptographic uses, choose a modern algorithm appropriate to the purpose."
+      },
+      {
+        severity: "Medium",
+        title: "Possible overly permissive CORS",
+        regex: /Access-Control-Allow-Origin["']?\s*[:,=]\s*["']\*["']|cors\s*\(\s*\)/i,
+        fix: "Configure an explicit trusted-origin allowlist where cross-origin access needs restricting."
+      },
+      {
+        severity: "Medium",
+        title: "Possible insecure cookie configuration",
+        regex: /res\.cookie\s*\([^;\n]*|setCookie\s*\([^;\n]*/i,
+        condition: line => !/httpOnly\s*:\s*true/i.test(line) ||
+                           !/secure\s*:\s*true/i.test(line),
+        fix: "Review cookie options. Use HttpOnly, Secure over HTTPS, and an appropriate SameSite policy where applicable."
+      },
+      {
+        severity: "Low",
+        title: "Debug logging may expose sensitive data",
+        regex: /console\.log\s*\([^)]*(?:password|token|secret|authorization)/i,
+        fix: "Remove sensitive values from logs and redact secrets in structured logging."
+      }
+    ];
+
+    lines.forEach((line, index) => {
+      rules.forEach(rule => {
+        if (
+          rule.regex.test(line) &&
+          (!rule.condition || rule.condition(line))
+        ) {
+          add(
+            rule.severity,
+            rule.title,
+            index + 1,
+            line.trim().slice(0, 300),
+            rule.fix
+          );
+        }
+      });
+    });
+
+    if (
+      /\b(?:SELECT|INSERT|UPDATE|DELETE)\b/i.test(code) &&
+      !/\b(?:prepare|preparedStatement|parameterized)\b/i.test(code)
+    ) {
+      add(
+        "Info",
+        "Review database query parameterization",
+        "-",
+        "SQL statements detected; this heuristic cannot verify how query values are bound.",
+        "Manually verify that all user-controlled SQL values use prepared statements or parameterized queries."
+      );
+    }
+
+    return findings;
+  }
+
+  function makeText(tag, text, className) {
+    const el = document.createElement(tag);
+    el.textContent = text;
+    if (className) el.className = className;
+    return el;
+  }
+
+  function displayFindings(findings) {
+    const counts = { Critical: 0, High: 0, Medium: 0, Low: 0, Info: 0 };
+
+    findings.forEach(f => {
+      counts[f.severity] = (counts[f.severity] || 0) + 1;
+    });
+
+    document.getElementById("criticalCount").textContent = counts.Critical;
+    document.getElementById("highCount").textContent = counts.High;
+    document.getElementById("mediumCount").textContent = counts.Medium;
+    document.getElementById("lowCount").textContent = counts.Low + counts.Info;
+    document.getElementById("totalCount").textContent = findings.length;
+
+    findingsBox.replaceChildren();
+
+    if (!findings.length) {
+      findingsBox.appendChild(makeText("h3", "No matching patterns found"));
+      findingsBox.appendChild(makeText(
+        "p",
+        "This does not prove the code is secure. Manual review and dedicated security tools are still recommended.",
+        "muted"
+      ));
+      return;
+    }
+
+    findings.forEach(f => {
+      const card = document.createElement("article");
+      card.className = "finding";
+
+      card.appendChild(makeText(
+        "div",
+        f.severity.toUpperCase() + " — Line " + f.line,
+        "severity " + f.severity.toLowerCase()
+      ));
+      card.appendChild(makeText("h3", f.title));
+      card.appendChild(makeText("p", "Evidence: " + f.evidence));
+      card.appendChild(makeText("p", "Suggested fix: " + f.fix));
+
+      findingsBox.appendChild(card);
+    });
+  }
+
+  scanBtn.addEventListener("click", () => {
+    const code = source.value;
+
+    if (!code.trim()) {
+      status.textContent = "Please paste some code before scanning.";
+      source.focus();
+      return;
+    }
+
+    scanBtn.disabled = true;
+    status.textContent = "Scanning for common risky patterns...";
+
+    try {
+      const findings = scanCode(code);
+      latestFindings = findings;
+      displayFindings(findings);
+      const deploymentFindings = findings.map(f => ({
+  ...f,
+  recommendation: f.fix || "Review this finding and apply an appropriate security fix."
+}));
+
+localStorage.setItem(
+  "secureCodeFindings",
+  JSON.stringify(deploymentFindings)
+);
+      results.hidden = false;
+
+      document.getElementById("scanNote").textContent =
+        "Language: " + language.value +
+        ". Heuristic scan only; this does not run code or replace SAST, dependency auditing, or manual review.";
+
+      status.textContent = "Scan complete. Review each finding before making changes.";
+      results.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      status.textContent = "Scan failed: " + error.message;
+    } finally {
+      scanBtn.disabled = false;
+    }
+  });
+
+  clearBtn.addEventListener("click", () => {
+    source.value = "";
+    latestFindings = [];
+    results.hidden = true;
+    findingsBox.replaceChildren();
+    status.textContent = "Cleared. Paste code to start another scan.";
+  });
+  document.getElementById("aiScanBtn").onclick = async () => {
+  const code = document.getElementById("source").value;
+  const token =
+    localStorage.getItem("token") ||
+    localStorage.getItem("authToken") ||
+    localStorage.getItem("jwt");
+
+  if (!code.trim()) {
+    alert("First paste your code!");
+    return;
+  }
+
+  if (!token) {
+    alert("Please login first!");
+    return;
+  }
+
+  try {
+    const r = await fetch("/api/ai/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        message: "Analyze this code for security vulnerabilities and suggest fixes.",
+        code: code,
+        language: document.getElementById("language").value,
+        mode: "security"
+      })
+    });
+
+    const d = await r.json();
+    alert(d.reply || d.message || JSON.stringify(d));
+  } catch (e) {
+    alert("Error: " + e.message);
+  }
+};
+document.getElementById("downloadReportBtn")
+  .addEventListener("click", () => {
+    const report = {
+  project: "Secure Code Platform",
+  generatedAt: new Date().toISOString(),
+  totalFindings: latestFindings.length,
+
+  severitySummary: {
+    High: latestFindings.filter(f => f.severity === "High").length,
+    Medium: latestFindings.filter(f => f.severity === "Medium").length,
+    Low: latestFindings.filter(f => f.severity === "Low").length
+  },
+
+  findings: latestFindings
+};
+    
+
+    const blob = new Blob(
+      [JSON.stringify(report, null, 2)],
+      { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "security-report.json";
+    link.click();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }); 
+</script>
+</body>
+</html>

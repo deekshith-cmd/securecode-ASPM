@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#070b18">
+    <meta name="description" content="SecureCode — Write, scan and deploy secure code.">
+
+    <title>SecureCode | Secure Development Platform</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="background-effects">
+        <div class="ambient ambient-one"></div>
+        <div class="ambient ambient-two"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <main class="page-layout">
+
+        <!-- LEFT: ANIMATED HERO -->
+
+        <section class="hero-section">
+
+            <a href="/" class="brand-logo" aria-label="SecureCode home">
+                <span class="logo-icon">⬡</span>
+                <span>Secure<span class="brand-highlight">Code</span></span>
+            </a>
+
+            <div class="hero-copy">
+                <div class="eyebrow">
+                    <span class="status-dot"></span>
+                    DEVELOPER SECURITY PLATFORM
+                </div>
+
+                <h1>
+                    Write code.<br>
+                    <span class="gradient-text">Break threats.</span><br>
+                    Ship with confidence.
+                </h1>
+
+                <p class="hero-description">
+                    Your intelligent coding workspace with security built
+                    into every step. Detect vulnerabilities before they
+                    reach production.
+                </p>
+
+                <div class="hero-benefits">
+                    <div class="benefit">
+                        <span class="benefit-icon">✓</span>
+                        Security-first development
+                    </div>
+
+                    <div class="benefit">
+                        <span class="benefit-icon">✓</span>
+                        AI-assisted coding workflow
+                    </div>
+
+                    <div class="benefit">
+                        <span class="benefit-icon">✓</span>
+                        Secure, one-click deployment
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANIMATED CODE WINDOW -->
+
+            <div class="code-window">
+
+                <div class="window-topbar">
+                    <div class="window-controls">
+                        <span class="window-dot red"></span>
+                        <span class="window-dot yellow"></span>
+                        <span class="window-dot green"></span>
+                    </div>
+
+                    <div class="window-filename">
+                        <span class="file-icon">JS</span>
+                        app.js
+                    </div>
+
+                    <div class="window-language">JavaScript</div>
+                </div>
+
+                <div class="code-content">
+                    <div class="code-line">
+                        <span class="line-number">01</span>
+                        <code><span class="code-purple">async function</span> <span class="code-blue">secureApp</span>() {</code>
+                    </div>
+
+                    <div class="code-line">
+                        <span class="line-number">02</span>
+                        <code>&nbsp;&nbsp;<span class="code-purple">const</span> app = <span class="code-green">"SecureCode"</span>;</code>
+                    </div>
+
+                    <div class="code-line">
+                        <span class="line-number">03</span>
+                        <code>&nbsp;&nbsp;<span class="code-purple">const</span> scan = <span class="code-purple">await</span> scanCode();</code>
+                    </div>
+
+                    <div class="code-line scan-line">
+                        <span class="line-number">04</span>
+                        <code>&nbsp;&nbsp;<span class="code-purple">if</span> (scan.<span class="code-blue">secure</span>) {</code>
+                    </div>
+
+                    <div class="code-line">
+                        <span class="line-number">05</span>
+                        <code>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-blue">deploy</span>(app);</code>
+                    </div>
+
+                    <div class="code-line">
+                        <span class="line-number">06</span>
+                        <code>&nbsp;&nbsp;}</code>
+                    </div>
+
+                    <div class="code-line">
+                        <span class="line-number">07</span>
+                        <code>}</code>
+                    </div>
+
+                    <div class="scan-beam"></div>
+                </div>
+
+                <div class="code-footer">
+                    <span class="footer-status">
+                        <span class="status-dot"></span>
+                        Scanning source code
+                    </span>
+
+                    <span class="footer-engine">ASPM ENGINE</span>
+                </div>
+
+            </div>
+
+            <!-- FLOATING SECURITY CARD -->
+
+            <div class="floating-security-card">
+                <div class="security-icon">⌁</div>
+
+                <div class="security-copy">
+                    <span class="security-label">SECURITY STATUS</span>
+                    <strong>Protection active</strong>
+                </div>
+
+                <span class="security-check">✓</span>
+            </div>
+
+            <div class="hero-footer">
+                <span>BUILT FOR DEVELOPERS</span>
+                <span class="footer-divider"></span>
+                <span>SECURITY BY DESIGN</span>
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT: LOGIN AND REGISTER -->
+
+        <section class="auth-section">
+
+            <div class="auth-topline">
+                <span class="auth-status">
+                    <span class="status-dot"></span>
+                    All systems operational
+                </span>
+
+                <span class="auth-version">SECURECODE v1.0</span>
+            </div>
+
+            <div class="auth-card">
+
+                <div class="auth-card-icon">🛡️</div>
+
+                <!-- LOGIN -->
+
+                <div id="loginBox">
+
+                    <div class="form-eyebrow">YOUR SECURE WORKSPACE</div>
+
+                    <h2>Welcome back<span class="heading-period">.</span></h2>
+
+                    <p class="subtitle">
+                        Sign in to continue building securely.
+                    </p>
+
+                    <form id="loginForm">
+
+                        <label for="loginUsername">Username or email</label>
+
+                        <div class="input-wrap">
+                            <span class="input-icon">◎</span>
+
+                            <input
+                                type="text"
+                                id="loginUsername"
+                                placeholder="you@example.com"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+
+                        <label for="loginPassword">Password</label>
+
+                        <div class="input-wrap">
+                            <span class="input-icon">⌑</span>
+
+                            <input
+                                type="password"
+                                id="loginPassword"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <span class="input-lock">🔒</span>
+                        </div>
+
+                        <button type="submit" class="primary-button">
+                            <span>Sign in securely</span>
+                            <span class="button-arrow">→</span>
+                        </button>
+
+                    </form>
+
+                    <p id="loginMessage" class="message" aria-live="polite"></p>
+
+                    <div class="form-separator">
+                        <span>SECURE ACCESS</span>
+                    </div>
+
+                    <div class="trust-note">
+                        <span>🔐</span>
+                        <span>Your development workspace, protected.</span>
+                    </div>
+
+                    <p class="switch">
+                        New to SecureCode?
+                        <button type="button" onclick="showRegister()">
+                            Create an account <span>↗</span>
+                        </button>
+                    </p>
+
+                </div>
+
+
+                <!-- REGISTER -->
+
+                <div id="registerBox" class="hidden">
+
+                    <div class="form-eyebrow">JOIN THE SECURE WORKFLOW</div>
+
+                    <h2>Create account<span class="heading-period">.</span></h2>
+
+                    <p class="subtitle">
+                        Start building and deploying more securely.
+                    </p>
+
+                    <form id="registerForm">
+
+                        <label for="registerUsername">Username</label>
+
+                        <div class="input-wrap">
+                            <span class="input-icon">◎</span>
+
+                            <input
+                                type="text"
+                                id="registerUsername"
+                                placeholder="Choose a username"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+
+                        <label for="registerEmail">Email address</label>
+
+                        <div class="input-wrap">
+                            <span class="input-icon">✉</span>
+
+                            <input
+                                type="email"
+                                id="registerEmail"
+                                placeholder="you@example.com"
+                                autocomplete="email"
+                                required
+                            >
+                        </div>
+
+                        <label for="registerPassword">Password</label>
+
+                        <div class="input-wrap">
+                            <span class="input-icon">⌑</span>
+
+                            <input
+                                type="password"
+                                id="registerPassword"
+                                placeholder="At least 8 characters"
+                                autocomplete="new-password"
+                                minlength="8"
+                                required
+                            >
+                        </div>
+
+                        <button type="submit" class="primary-button">
+                            <span>Create secure account</span>
+                            <span class="button-arrow">→</span>
+                        </button>
+
+                    </form>
+
+                    <p id="registerMessage" class="message" aria-live="polite"></p>
+
+                    <p class="switch">
+                        Already have an account?
+                        <button type="button" onclick="showLogin()">
+                            Sign in <span>↗</span>
+                        </button>
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="auth-bottom">
+                <span>© 2026 SecureCode</span>
+
+                <span class="privacy-label">
+                    <span class="tiny-shield">◆</span>
+                    Security-first development
+                </span>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

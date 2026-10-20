@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureCode - Deployment</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #07111f;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #29456b;
+    padding-bottom: 18px;
+}
+
+main {
+    max-width: 900px;
+    margin: 25px auto;
+}
+
+.box {
+    background: #0d1d32;
+    border: 1px solid #315b8c;
+    border-radius: 12px;
+    padding: 25px;
+}
+
+button {
+    background: #1689e8;
+    color: white;
+    border: 0;
+    padding: 12px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+    margin: 5px 5px 5px 0;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.status {
+    color: #8ee7ff;
+    overflow-wrap: anywhere;
+}
+
+.note {
+    color: #bdcce0;
+    line-height: 1.6;
+}
+
+#deploymentUrl {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #315b8c;
+    background: #07111f;
+    color: #8ee7ff;
+    margin: 8px 0;
+}
+
+#openLink {
+    display: inline-block;
+    color: #8ee7ff;
+    margin: 10px 0;
+    overflow-wrap: anywhere;
+}
+
+pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <b>🚀 SecureCode — Deployment</b>
+    <button onclick="location.href='dashboard.html'">
+        ← Dashboard
+    </button>
+</header>
+
+<main>
+    <h1>Secure Deployment</h1>
+    <p>Check your code before creating a deployment.</p>
+
+    <div class="box">
+
+        <p>🔐 Security Status: <b id="security">Not verified</b></p>
+        <p>📦 Build Status: <b id="build">Waiting</b></p>
+        <p>🚀 Deployment Status: <b id="deploy">Not deployed</b></p>
+
+        <button id="checkButton" onclick="checkSecurity()">
+            🛡️ Check Security
+        </button>
+
+        <button id="deployButton" onclick="deployApp()" disabled>
+            🚀 Create Deploy
+        </button>
+
+        <p id="message" class="status">
+            Run the security check before deploying.
+        </p>
+
+        <div id="findings"></div>
+
+        <section id="urlSection" hidden>
+            <hr>
+            <h3>🎉 Deployment Created!</h3>
+            <p>Your deployment URL:</p>
+
+            <input id="deploymentUrl" readonly>
+
+            <br>
+
+            <button onclick="copyUrl()">📋 Copy URL</button>
+
+            <br>
+
+            <a id="openLink" href="#" target="_blank"
+               rel="noopener noreferrer">Open Deployed Website</a>
+        </section>
+
+        <hr>
+
+        <p class="note">
+            This prototype supports HTML deployment only.
+            The URL works while the server is running and the deployment
+            remains in memory. Security scanning does not guarantee
+            that code is safe.
+        </p>
+
+    </div>
+</main>
+
+<script>
+"use strict";
+
+const securityElement = document.getElementById("security");
+const buildElement = document.getElementById("build");
+const deployElement = document.getElementById("deploy");
+const messageElement = document.getElementById("message");
+const findingsElement = document.getElementById("findings");
+const checkButton = document.getElementById("checkButton");
+const deployButton = document.getElementById("deployButton");
+const urlSection = document.getElementById("urlSection");
+const deploymentUrl = document.getElementById("deploymentUrl");
+const openLink = document.getElementById("openLink");
+
+let securityPassed = false;
+
+function getToken() {
+    return (
+        localStorage.getItem("token") ||
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("jwt") ||
+        ""
+    );
+}
+
+function getSavedCode() {
+    return (
+        localStorage.getItem("secureCodeEditorContent") ||
+        localStorage.getItem("secureCode") ||
+        ""
+    );
+}
+
+function getSavedLanguage() {
+    return (
+        localStorage.getItem("secureCodeLanguage") ||
+        localStorage.getItem("secureLanguage") ||
+        "html"
+    ).toLowerCase();
+}
+
+async function checkSecurity() {
+    const token = getToken();
+    const code = getSavedCode();
+    const language = getSavedLanguage();
+
+    securityPassed = false;
+    deployButton.disabled = true;
+    urlSection.hidden = true;
+    findingsElement.textContent = "";
+    buildElement.textContent = "Waiting";
+    deployElement.textContent = "Not deployed";
+
+    if (!token) {
+        securityElement.textContent = "Login required";
+        messageElement.textContent = "Please log in first.";
+        return;
+    }
+
+    if (!code.trim()) {
+        securityElement.textContent = "Code not found";
+        messageElement.textContent =
+            "Open the editor, write HTML code and save it first.";
+        return;
+    }
+
+    checkButton.disabled = true;
+    securityElement.textContent = "Checking...";
+    messageElement.textContent = "Checking code security...";
+
+    try {
+        const response = await fetch("/api/deployment/check", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({ code, language })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Security check failed.");
+        }
+
+        findingsElement.textContent =
+            JSON.stringify(result.findings || [], null, 2);
+
+        if (result.allowed !== true) {
+            securityElement.textContent = "Deployment blocked";
+            messageElement.textContent =
+                result.message || "High-risk findings detected.";
+            return;
+        }
+
+        securityPassed = true;
+        securityElement.textContent = "Check passed";
+        messageElement.textContent =
+            "Basic security check passed. Review findings before deployment.";
+        deployButton.disabled = false;
+
+    } catch (error) {
+        securityElement.textContent = "Check failed";
+        messageElement.textContent = error.message;
+
+    } finally {
+        checkButton.disabled = false;
+    }
+}
+
+async function deployApp() {
+    if (!securityPassed) {
+        messageElement.textContent =
+            "Run the security check before deployment.";
+        return;
+    }
+
+    const token = getToken();
+    const code = getSavedCode();
+    const language = getSavedLanguage();
+
+    if (!token || !code) {
+        messageElement.textContent =
+            "Login again and save your code before deployment.";
+        return;
+    }
+
+    if (language !== "html") {
+        messageElement.textContent =
+            "This prototype currently supports HTML code only.";
+        return;
+    }
+
+    deployButton.disabled = true;
+    checkButton.disabled = true;
+    buildElement.textContent = "Creating...";
+    deployElement.textContent = "Deploying...";
+    messageElement.textContent = "Creating your deployment URL...";
+    urlSection.hidden = true;
+
+    try {
+        const response = await fetch("/api/deploy", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({ code, language })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Deployment failed.");
+        }
+
+        buildElement.textContent = "Complete";
+        deployElement.textContent = "Deployed";
+        messageElement.textContent = result.message;
+
+        deploymentUrl.value = result.url;
+        openLink.href = result.url;
+        urlSection.hidden = false;
+
+    } catch (error) {
+        buildElement.textContent = "Failed";
+        deployElement.textContent = "Not deployed";
+        messageElement.textContent = error.message;
+
+    } finally {
+        deployButton.disabled = false;
+        checkButton.disabled = false;
+    }
+}
+
+async function copyUrl() {
+    try {
+        await navigator.clipboard.writeText(deploymentUrl.value);
+        messageElement.textContent = "Deployment URL copied!";
+    } catch {
+        deploymentUrl.select();
+        document.execCommand("copy");
+        messageElement.textContent = "Copy the selected URL.";
+    }
+}
+</script>
+
+</body>
+</html>

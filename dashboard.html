@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SecureCode Dashboard</title>
+
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+    <header>
+
+        <div class="logo">
+            🛡️ SecureCode
+        </div>
+
+        <div>
+            <span id="username"></span>
+
+            <button onclick="logout()">
+                Logout
+            </button>
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <h1>Developer Dashboard</h1>
+
+        <p>
+            Welcome to your secure development environment.
+        </p>
+
+
+        <div class="cards">
+
+    <div class="card" onclick="openPage('editor.html')">
+        <h2>💻 Code Editor</h2>
+        <p>Write and execute your programs.</p>
+    </div>
+
+    <div class="card" onclick="openPage('ai.html')">
+        <h2>🤖 AI Assistant</h2>
+        <p>Get coding help and secure suggestions.</p>
+    </div>
+
+    <div class="card" onclick="openPage('aspm.html')">
+        <h2>🔐 ASPM Security</h2>
+        <p>Scan your project for vulnerabilities.</p>
+    </div>
+
+    <div class="card" onclick="openPage('deployment.html')">
+        <h2>🚀 Deployment</h2>
+        <p>Securely deploy your application.</p>
+    </div>
+
+</div>
+
+    </main>
+
+
+    <script>
+
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(
+            localStorage.getItem("user")
+        );
+
+        if (!token || !user) {
+            window.location.href = "/";
+        }
+
+        document.getElementById("username").textContent =
+            `👤 ${user.username}`;
+
+
+        async function checkAuthentication() {
+    try {
+        const response = await fetch("/api/dashboard", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            logout();
+        }
+    } catch (error) {
+        document.getElementById("username").textContent =
+            "⚠️ Connection error. Check server.";
+    }
+}
+
+
+        function logout() {
+
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+
+            window.location.href = "/";
+        }
+
+        function openPage(page) {
+            window.location.href = page;
+        }
+         
+        checkAuthentication();
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureCode - AI Assistant</title>
+
+  <style>
+  * {
+    box-sizing: border-box;
+  }
+
+  :root {
+    --bg: #070b17;
+    --panel: #0e1629;
+    --panel-light: #141f36;
+    --border: rgba(130, 160, 220, 0.18);
+    --primary: #7c5cff;
+    --secondary: #20c8ff;
+    --text: #f1f5ff;
+    --muted: #94a3bd;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at top left, rgba(79, 70, 229, 0.13), transparent 38%),
+      radial-gradient(ellipse at bottom right, rgba(14, 165, 233, 0.10), transparent 35%),
+      var(--bg);
+    color: var(--text);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    line-height: 1.6;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 18px 30px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(7, 11, 23, 0.88);
+    backdrop-filter: blur(16px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  header h1,
+  header h2 {
+    margin: 0;
+    font-size: 23px;
+    font-weight: 750;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #ffffff, #a5b4fc, #67e8f9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  button,
+  select {
+    font: inherit;
+  }
+
+  button {
+    background: linear-gradient(135deg, #7657ff, #4f8cff);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 11px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  }
+
+  button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 22px rgba(102, 92, 255, 0.28);
+    filter: brightness(1.1);
+  }
+
+  button:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  main {
+    width: min(100%, 1000px);
+    margin: 35px auto;
+    padding: 20px;
+    animation: fadeIn 0.45s ease;
+  }
+
+  .chat {
+    background: linear-gradient(160deg, rgba(17, 27, 49, 0.96), rgba(10, 17, 32, 0.98));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    min-height: 380px;
+    max-height: 58vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.22);
+    scrollbar-width: thin;
+    scrollbar-color: #35446a transparent;
+  }
+
+  .chat::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  .chat::-webkit-scrollbar-thumb {
+    background: #35446a;
+    border-radius: 10px;
+  }
+
+  .message {
+    width: fit-content;
+    max-width: 90%;
+    padding: 13px 17px;
+    margin: 16px 0;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+    animation: messageIn 0.25s ease;
+  }
+
+  .user {
+    margin-left: auto;
+    background: linear-gradient(135deg, rgba(92, 76, 210, 0.35), rgba(59, 130, 246, 0.20));
+    border-color: rgba(129, 140, 248, 0.3);
+    border-bottom-right-radius: 5px;
+  }
+
+  .ai {
+    margin-right: auto;
+    background: rgba(22, 34, 57, 0.95);
+    border-color: rgba(103, 232, 249, 0.14);
+    border-bottom-left-radius: 5px;
+  }
+
+  .composer {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  input,
+  textarea,
+  select {
+    background: rgba(12, 19, 36, 0.95);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 13px 15px;
+    font: inherit;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.13);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #73829f;
+  }
+
+  select {
+    width: 100%;
+    margin: 12px 0;
+    cursor: pointer;
+  }
+
+  select option {
+    background: #111a2e;
+    color: white;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 110px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  .hint {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  ::selection {
+    background: rgba(124, 92, 255, 0.4);
+    color: white;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes messageIn {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 600px) {
+    header {
+      padding: 15px 18px;
+    }
+
+    header h1,
+    header h2 {
+      font-size: 20px;
+    }
+
+    main {
+      margin: 15px auto;
+      padding: 12px;
+    }
+
+    .chat {
+      min-height: 320px;
+      max-height: 55vh;
+      padding: 15px;
+      border-radius: 15px;
+    }
+
+    .message {
+      max-width: 96%;
+      padding: 11px 13px;
+      font-size: 14px;
+    }
+
+    .composer {
+      gap: 8px;
+    }
+
+    .composer input {
+      flex-basis: 60%;
+    }
+
+    .composer button {
+      padding: 11px 14px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+
+<body>
+  <header>
+    <b>🤖 SecureCode — AI Assistant</b>
+    <button onclick="location.href='dashboard.html'">
+      ← Dashboard
+    </button>
+  </header>
+
+  <main>
+    <h1>AI Assistant</h1>
+    <p class="hint">
+      Ask coding questions, explain code, fix bugs, or check for security issues.
+    </p>
+
+    <label for="mode">Choose assistance:</label>
+    <select id="mode">
+      <option value="chat">General coding chat</option>
+      <option value="explain">Explain my code</option>
+      <option value="fix">Fix code errors</option>
+      <option value="security">Security review</option>
+    </select>
+
+    <label for="code">Optional: Paste your code</label>
+    <textarea id="code" placeholder="Paste your code here..."></textarea>
+
+    <div class="chat" id="chat" aria-live="polite">
+      <div class="message ai">
+        👋 Hello! I'm your SecureCode AI assistant. Ask me a coding or security question!
+      </div>
+    </div>
+
+    <div class="composer">
+      <input
+        id="question"
+        type="text"
+        placeholder="Ask a coding or security question..."
+      >
+      <button id="sendBtn" type="button">Send</button>
+    </div>
+
+    <p class="hint" id="status">
+      Keep your API keys and passwords out of pasted code.
+    </p>
+  </main>
+
+  <script>
+    const chat = document.getElementById("chat");
+    const question = document.getElementById("question");
+    const codeBox = document.getElementById("code");
+    const mode = document.getElementById("mode");
+    const sendBtn = document.getElementById("sendBtn");
+    const status = document.getElementById("status");
+
+    function addMessage(text, sender) {
+      const message = document.createElement("div");
+      message.className = "message " + sender;
+      message.textContent = text;
+      chat.appendChild(message);
+      chat.scrollTop = chat.scrollHeight;
+      return message;
+    }
+
+    async function sendMessage() {
+      const message = question.value.trim();
+
+      if (!message) {
+        status.textContent = "Please enter your question first.";
+        return;
+      }
+
+      // Check common token names used by login pages.
+      const token =
+        localStorage.getItem("token") ||
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("jwt");
+
+      if (!token) {
+        status.textContent =
+          "Login required. Please log in and then reopen the AI Assistant.";
+        return;
+      }
+
+      addMessage(message, "user");
+      question.value = "";
+      sendBtn.disabled = true;
+      status.textContent = "Gemini AI is thinking...";
+
+      const loadingMessage = addMessage("Thinking...", "ai");
+
+      try {
+        const response = await fetch("/api/ai/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify({
+            message: message,
+            code: codeBox.value.trim(),
+            language: "auto",
+            mode: mode.value
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || data.message || "AI request failed.");
+        }
+
+       console.log("Gemini backend response:", data);
+
+const reply =
+  data.reply ??
+  data.response ??
+  data.message ??
+  data.text;
+
+loadingMessage.textContent =
+  typeof reply === "string" && reply.length > 0
+    ? reply
+    : "DEBUG RESPONSE: " + JSON.stringify(data);
+
+status.textContent = "Response received.";
+      } catch (error) {
+        loadingMessage.textContent = "Sorry, " + error.message;
+        status.textContent =
+          "Check your login, backend server, and Gemini configuration.";
+      } finally {
+        sendBtn.disabled = false;
+        question.focus();
+        chat.scrollTop = chat.scrollHeight;
+      }
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+
+    question.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>

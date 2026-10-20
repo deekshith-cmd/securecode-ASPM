@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SecureCode - Professional Code Editor</title>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+    --bg:#080d19;
+    --panel:#101827;
+    --panel2:#172338;
+    --border:#29384e;
+    --text:#e5edf8;
+    --muted:#94a3b8;
+    --blue:#3b82f6;
+    --purple:#8b5cf6;
+    --green:#16a34a;
+}
+
+body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Segoe UI",Arial,sans-serif;
+}
+
+header{
+    background:#101827;
+    border-bottom:1px solid var(--border);
+    padding:15px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+}
+
+header h2{
+    margin:0;
+    color:#93c5fd;
+    font-size:21px;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    color:var(--muted);
+    font-size:13px;
+}
+
+.container{
+    padding:16px;
+    max-width:1800px;
+    margin:auto;
+}
+
+button,select{
+    padding:9px 12px;
+    border:1px solid transparent;
+    border-radius:6px;
+    font-size:13px;
+    font-family:inherit;
+}
+
+button{
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    filter:brightness(1.15);
+    transform:translateY(-1px);
+}
+
+select{
+    background:#172338;
+    color:white;
+    border-color:#3b4b63;
+}
+
+.toolbar{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:12px;
+    margin-bottom:14px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+}
+
+.toolbar label{
+    color:var(--muted);
+    font-size:13px;
+}
+
+.run-btn{background:#15803d}
+.scan-btn{background:#7c3aed}
+.deploy-btn{background:#0f766e}
+.danger-btn{background:#b91c1c}
+
+.workspace{
+    display:grid;
+    grid-template-columns:230px minmax(300px,1fr) minmax(280px,1fr);
+    gap:12px;
+    align-items:stretch;
+}
+
+.panel,.explorer-panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    min-width:0;
+}
+
+.panel-title,.explorer-heading{
+    background:var(--panel2);
+    border-bottom:1px solid var(--border);
+    padding:13px;
+    font-size:14px;
+    font-weight:600;
+}
+
+.explorer-heading{color:#bfdbfe}
+
+.explorer-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+    padding:8px;
+    border-bottom:1px solid var(--border);
+}
+
+.explorer-actions button{
+    padding:7px 9px;
+    font-size:11px;
+}
+
+#fileList{
+    padding:8px;
+    min-height:300px;
+    max-height:65vh;
+    overflow:auto;
+}
+
+.file-item{
+    display:block;
+    width:100%;
+    text-align:left;
+    background:transparent;
+    color:#cbd5e1;
+    margin-bottom:3px;
+    overflow-wrap:anywhere;
+}
+
+.file-item.active{
+    background:#1d3150;
+    color:#93c5fd;
+}
+
+#fileTabs{
+    display:flex;
+    overflow-x:auto;
+    background:#080d17;
+    border-bottom:1px solid var(--border);
+}
+
+.file-tab{
+    flex-shrink:0;
+    border-radius:0;
+    background:#111a2a;
+    color:#aebed2;
+    padding:11px 14px;
+}
+
+.file-tab.active{
+    background:#1d3150;
+    color:#93c5fd;
+    border-bottom:2px solid #60a5fa;
+}
+
+#monacoEditor{
+    width:100%;
+    height:520px;
+    min-height:350px;
+    overflow:hidden;
+}
+
+#code{
+    width:100%;
+    height:100%;
+    resize:vertical;
+    padding:15px;
+    background:#080d17;
+    color:#d1fae5;
+    border:0;
+    outline:0;
+    font-family:Consolas,monospace;
+    font-size:14px;
+}
+
+#output{
+    display:block;
+    width:100%;
+    height:520px;
+    border:0;
+    background:white;
+}
+
+#pythonOutput{
+    display:none;
+    padding:16px;
+    min-height:520px;
+    background:#080d17;
+    overflow-wrap:anywhere;
+}
+
+#pythonResult,#pythonError{
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    font-family:Consolas,monospace;
+}
+
+#pythonResult{color:#86efac}
+#pythonError{color:#fca5a5}
+
+.status{
+    padding:13px;
+    margin-top:14px;
+    border:1px solid #293e5b;
+    border-radius:8px;
+    background:#111d30;
+    color:#bfdbfe;
+    font-size:13px;
+    overflow-wrap:anywhere;
+}
+
+.section{margin-top:22px}
+
+.section h3{
+    color:#c4b5fd;
+    font-size:17px;
+}
+
+.result-box{
+    min-height:65px;
+    padding:15px;
+    background:#0d1524;
+    border:1px solid var(--border);
+    border-radius:9px;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    color:#cbd5e1;
+    font:13px/1.7 Consolas,monospace;
+}
+
+#currentFileLabel{
+    color:#93c5fd;
+    font-size:12px;
+}
+
+@media(max-width:1150px){
+    .workspace{
+        grid-template-columns:200px minmax(0,1fr);
+    }
+
+    .workspace>.panel:last-child{
+        grid-column:1/-1;
+    }
+}
+
+@media(max-width:700px){
+    .container{padding:9px}
+
+    header{padding:13px}
+
+    header h2{font-size:18px}
+
+    .workspace{grid-template-columns:minmax(0,1fr)}
+
+    .workspace>.panel:last-child{grid-column:auto}
+
+    .toolbar button,.toolbar select{
+        flex:1 1 auto;
+    }
+
+    #monacoEditor{height:400px}
+
+    #output{height:350px}
+
+    #fileList{
+        min-height:140px;
+        max-height:300px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>🛡️ SecureCode Platform</h2>
+
+    <div class="header-right">
+        <span>Professional Code Editor + ASPM</span>
+
+        <button onclick="location.href='/dashboard.html'"
+                style="background:#15803d">
+            ← Dashboard
+        </button>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="toolbar">
+
+        <button onclick="createFile()">＋ New File</button>
+        <button onclick="refreshFiles()">↻ Refresh</button>
+
+        <label for="language">Language:</label>
+
+        <select id="language" onchange="changeLanguage()">
+            <option value="html">HTML</option>
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="css">CSS</option>
+        </select>
+
+        <button class="run-btn" onclick="runCode()">
+            ▶ Run / Preview
+        </button>
+
+        <button class="scan-btn" onclick="scanSecurity()">
+            🛡️ Security Scan
+        </button>
+
+        <button onclick="saveCode()">💾 Save</button>
+
+        <button class="deploy-btn" onclick="deployCode()">
+            🚀 Deploy Website
+        </button>
+
+        <button onclick="downloadCode()">⬇ Download</button>
+
+        <button class="danger-btn" onclick="clearCode()">
+            Clear Editor
+        </button>
+
+    </div>
+
+    <div class="workspace">
+
+        <!-- FILE EXPLORER -->
+
+        <aside class="explorer-panel">
+
+            <div class="explorer-heading">
+                📁 EXPLORER
+            </div>
+
+            <div class="explorer-actions">
+                <button onclick="createFile()">＋ File</button>
+                <button onclick="createFolder()">📁 Folder</button>
+                <button onclick="renameItem()">✏️ Rename</button>
+                <button onclick="deleteItem()">🗑️ Delete</button>
+            </div>
+
+            <div id="fileList">Loading project files...</div>
+
+        </aside>
+
+        <!-- CODE EDITOR -->
+
+        <section class="panel">
+
+            <div class="panel-title">
+                📝 Editor
+                <span id="currentFileLabel"></span>
+            </div>
+
+            <div id="fileTabs"></div>
+
+            <div id="monacoEditor">
+                <textarea id="code"
+                          spellcheck="false"
+                          aria-label="Code editor"
+                          placeholder="Select a file from Explorer or create a new file."></textarea>
+            </div>
+
+        </section>
+
+        <!-- OUTPUT -->
+
+        <section class="panel">
+
+            <div class="panel-title">🖥️ Output / Preview</div>
+
+            <iframe id="output"
+                    title="Code output preview"
+                    sandbox="allow-scripts"></iframe>
+
+            <div id="pythonOutput">
+                <h3>Python Output</h3>
+                <pre id="pythonResult"></pre>
+
+                <h3 style="color:#fca5a5">Errors</h3>
+                <pre id="pythonError"></pre>
+            </div>
+
+        </section>
+
+    </div>
+
+    <div id="message" class="status">
+        Initializing editor...
+    </div>
+
+    <div class="section">
+        <h3>🛡️ ASPM Security Scan Results</h3>
+        <div id="securityResults" class="result-box">
+            Select a file and run a security scan.
+        </div>
+    </div>
+
+</div>
+
+<!-- Monaco Editor loader -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+
+<script>
+"use strict";
+
+const languageSelect = document.getElementById("language");
+const output = document.getElementById("output");
+const message = document.getElementById("message");
+const pythonOutput = document.getElementById("pythonOutput");
+const pythonResult = document.getElementById("pythonResult");
+const pythonError = document.getElementById("pythonError");
+const securityResults = document.getElementById("securityResults");
+const fileList = document.getElementById("fileList");
+const fileTabs = document.getElementById("fileTabs");
+const currentFileLabel = document.getElementById("currentFileLabel");
+
+let monacoEditor = null;
+let currentFile = "";
+let openFiles = [];
+let fileContents = {};
+let localMode = false;
+
+const templates = {
+    "index.html": `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>My Website</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Hello SecureCode!</h1>
+<p>Welcome to your project.</p>
+<script src="script.js"><\/script>
+</body>
+</html>`,
+
+    "style.css": `body {
+    font-family: Arial, sans-serif;
+    padding: 24px;
+    background: #eff6ff;
+}
+
+h1 {
+    color: #1d4ed8;
+}`,
+
+    "script.js": `console.log("Hello from SecureCode!");
+console.log("2 + 3 =", 2 + 3);`,
+
+    "main.py": `print("Hello SecureCode!")
+print(2 + 3)`
+};
+
+const langByExtension = {
+    html: "html",
+    htm: "html",
+    css: "css",
+    js: "javascript",
+    mjs: "javascript",
+    cjs: "javascript",
+    py: "python"
+};
+
+function getToken() {
+    return localStorage.getItem("token") ||
+           localStorage.getItem("authToken") ||
+           localStorage.getItem("jwt") || "";
+}
+
+function ext(name) {
+    return (name.split(".").pop() || "").toLowerCase();
+}
+
+function languageForFile(name) {
+    return langByExtension[ext(name)] || "plaintext";
+}
+
+function setMessage(text) {
+    message.textContent = text;
+}
+
+function editorValue() {
+    return monacoEditor ? monacoEditor.getValue() :
+           document.getElementById("code").value;
+}
+
+function setEditorValue(value) {
+    if (monacoEditor) {
+        monacoEditor.setValue(value || "");
+    } else {
+        document.getElementById("code").value = value || "";
+    }
+}
+
+function setEditorLanguage(lang) {
+    if (monacoEditor && window.monaco) {
+        monaco.editor.setModelLanguage(
+            monacoEditor.getModel(),
+            lang || "plaintext"
+        );
+    }
+}
+
+function getSafeLocalKey(name) {
+    return "scp:file:" + name;
+}
+
+function localFiles() {
+    try {
+        return JSON.parse(localStorage.getItem("scp:files") || "[]");
+    } catch {
+        return [];
+    }
+}
+
+function saveLocalFiles(files) {
+    localStorage.setItem(
+        "scp:files",
+        JSON.stringify([...new Set(files)])
+    );
+}
+
+function useLocalMode() {
+    localMode = true;
+
+    let files = localFiles();
+
+    if (!files.length) {
+        files = ["index.html", "style.css", "script.js"];
+        saveLocalFiles(files);
+
+        for (const name of files) {
+            localStorage.setItem(
+                getSafeLocalKey(name),
+                templates[name] || ""
+            );
+        }
+    }
+}
+
+async function api(path, options = {}) {
+    const token = getToken();
+
+    const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+    };
+
+    if (token) {
+        headers.Authorization = "Bearer " + token;
+    }
+
+    const response = await fetch(path, {
+        ...options,
+        headers
+    });
+
+    let data = {};
+
+    try {
+        data = await response.json();
+    } catch {}
+
+    if (!response.ok) {
+        throw new Error(
+            data.message || data.error ||
+            "Request failed (" + response.status + ")"
+        );
+    }
+
+    return data;
+}
+
+/* MONACO INITIALIZATION */
+
+function initializeMonaco() {
+    if (typeof require !== "function") {
+        setMessage("Monaco could not load. Using basic text editor.");
+        refreshFiles();
+        return;
+    }
+
+    require.config({
+        paths: {
+            vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs"
+        }
+    });
+
+    require(["vs/editor/editor.main"], function () {
+
+        const textarea = document.getElementById("code");
+        const initialValue = textarea.value;
+
+        monacoEditor = monaco.editor.create(
+            document.getElementById("monacoEditor"),
+            {
+                value: initialValue,
+                language: "html",
+                theme: "vs-dark",
+                automaticLayout: true,
+                fontSize: 14,
+                fontFamily: "Consolas, 'Courier New', monospace",
+                minimap: {
+                    enabled: true
+                },
+                lineNumbers: "on",
+                roundedSelection: true,
+                scrollBeyondLastLine: false,
+                tabSize: 4,
+                wordWrap: "on",
+                suggestOnTriggerCharacters: true,
+                quickSuggestions: true,
+                folding: true,
+                formatOnPaste: true,
+                formatOnType: true,
+                padding: {
+                    top: 12
+                }
+            }
+        );
+
+        textarea.style.display = "none";
+
+        monacoEditor.onDidChangeModelContent(function () {
+            if (currentFile) {
+                fileContents[currentFile] = monacoEditor.getValue();
+            }
+        });
+
+        window.addEventListener("resize", function () {
+            monacoEditor.layout();
+        });
+
+        setMessage("Monaco Editor ready.");
+        refreshFiles();
+    });
+}
+
+/* FILE EXPLORER */
+
+async function refreshFiles() {
+    fileList.textContent = "Loading files...";
+
+    try {
+        const data = await api("/api/project/files");
+        localMode = false;
+
+        const files = Array.isArray(data.files) ? data.files : [];
+
+        const names = files.map(item =>
+            typeof item === "string" ? item : item.name
+        );
+
+        renderFiles(files);
+
+        if (!names.length) {
+            fileList.textContent =
+                "No files found. Click + File to create one.";
+        }
+
+        if (!currentFile && names.length) {
+            const first = names.includes("index.html") ?
+                "index.html" : names[0];
+
+            if (first) await openFile(first);
+        }
+
+        setMessage("Project files loaded from server.");
+
+    } catch (error) {
+        useLocalMode();
+
+        const files = localFiles();
+        renderFiles(files);
+
+        if (!currentFile && files.length) {
+            await openFileLocal(
+                files.includes("index.html") ?
+                "index.html" : files[0]
+            );
+        }
+
+        setMessage(
+            "Browser-local mode: " + error.message +
+            ". Server file APIs are unavailable."
+        );
+    }
+}
+
+function renderFiles(files) {
+    fileList.replaceChildren();
+
+    const items = files.map(item =>
+        typeof item === "string" ?
+        { name: item, type: "file" } : item
+    );
+
+    const folders = window.expandedFolders ||
+                    (window.expandedFolders = new Set());
+
+    function renderItem(item, depth = 0) {
+        if (!item || !item.name) return;
+
+        const name = item.name;
+        const isFolder = item.type === "folder";
+
+        const row = document.createElement("button");
+
+        row.className = "file-item" +
+            (name === currentFile ? " active" : "");
+
+        row.style.paddingLeft = (10 + depth * 16) + "px";
+
+        const baseName = name.split("/").pop();
+
+        row.textContent = isFolder ?
+            (folders.has(name) ? "📂 " : "📁 ") + baseName :
+            (ext(name) === "html" ? "🌐 " :
+             ext(name) === "css" ? "🎨 " :
+             ext(name) === "js" ? "🟨 " :
+             ext(name) === "py" ? "🐍 " : "📄 ") + baseName;
+
+        row.onclick = async function () {
+            if (isFolder) {
+                folders.has(name) ?
+                    folders.delete(name) : folders.add(name);
+
+                renderFiles(items);
+                return;
+            }
+
+            await openFile(name);
+        };
+
+        fileList.appendChild(row);
+
+        if (isFolder && folders.has(name)) {
+            const children = items.filter(child => {
+                const prefix = name + "/";
+
+                return child.name.startsWith(prefix) &&
+                    !child.name.slice(prefix.length).includes("/");
+            });
+
+            children.forEach(child =>
+                renderItem(child, depth + 1)
+            );
+        }
+    }
+
+    items.filter(item => item.name && !item.name.includes("/"))
+         .forEach(item => renderItem(item));
+}
+
+function renderTabs() {
+    fileTabs.replaceChildren();
+
+    openFiles.forEach(name => {
+        const button = document.createElement("button");
+
+        button.className = "file-tab" +
+            (name === currentFile ? " active" : "");
+
+        button.textContent = name;
+        button.title = "Switch to " + name;
+
+        button.onclick = () => switchTab(name);
+
+        fileTabs.appendChild(button);
+    });
+}
+
+async function switchTab(name) {
+    if (currentFile) {
+        fileContents[currentFile] = editorValue();
+    }
+
+    await openFile(name);
+}
+
+async function openFile(name) {
+    if (currentFile) {
+        fileContents[currentFile] = editorValue();
+    }
+
+    try {
+        let content;
+
+        if (localMode) {
+            content = localStorage.getItem(getSafeLocalKey(name));
+
+            if (content === null) {
+                content = templates[name] || "";
+            }
+        } else {
+            const data = await api(
+                "/api/project/file?name=" +
+                encodeURIComponent(name)
+            );
+
+            content = data.content || "";
+        }
+
+        currentFile = name;
+
+        if (!openFiles.includes(name)) {
+            openFiles.push(name);
+        }
+
+        fileContents[name] = content;
+
+        setEditorValue(content);
+
+        const lang = languageForFile(name);
+
+        languageSelect.value =
+            ["html", "css", "javascript", "python"].includes(lang) ?
+            lang : "html";
+
+        setEditorLanguage(lang);
+
+        currentFileLabel.textContent = " — " + name;
+
+        renderTabs();
+        renderFiles(localMode ? localFiles() : []);
+
+        setMessage("Opened " + name);
+
+    } catch (error) {
+        setMessage("Could not open " + name + ": " + error.message);
+    }
+}
+
+async function openFileLocal(name) {
+    currentFile = name;
+
+    if (!openFiles.includes(name)) {
+        openFiles.push(name);
+    }
+
+    const content =
+        localStorage.getItem(getSafeLocalKey(name)) ||
+        templates[name] || "";
+
+    fileContents[name] = content;
+    setEditorValue(content);
+
+    const lang = languageForFile(name);
+
+    languageSelect.value =
+        ["html", "css", "javascript", "python"].includes(lang) ?
+        lang : "html";
+
+    setEditorLanguage(lang);
+
+    currentFileLabel.textContent = " — " + name;
+
+    renderTabs();
+    renderFiles(localFiles());
+}
+
+async function createFile() {
+    const name = prompt(
+        "New file name (example: about.html or css/style.css):"
+    );
+
+    if (name === null) return;
+
+    const clean = name.trim().replace(/\\/g, "/");
+
+    if (
+        !clean ||
+        clean.startsWith("/") ||
+        clean.split("/").some(part =>
+            !part || part === "." || part === ".."
+        ) ||
+        !/^[a-zA-Z0-9_.\-/]+$/.test(clean)
+    ) {
+        alert("Enter a valid relative file name.");
+        return;
+    }
+
+    if (localMode) {
+        const files = localFiles();
+
+        if (files.includes(clean)) {
+            alert("File already exists.");
+            return;
+        }
+
+        saveLocalFiles([...files, clean]);
+
+        localStorage.setItem(
+            getSafeLocalKey(clean),
+            templates[clean] || ""
+        );
+
+        await openFileLocal(clean);
+
+        setMessage("Created " + clean + " locally.");
+        return;
+    }
+
+    try {
+        await api("/api/project/file", {
+            method: "PUT",
+            body: JSON.stringify({
+                name: clean,
+                content: templates[clean] || ""
+            })
+        });
+
+        await refreshFiles();
+        await openFile(clean);
+
+        setMessage("Created " + clean);
+
+    } catch (error) {
+        setMessage("Could not create file: " + error.message);
+    }
+}
+
+/* SAVE */
+
+async function saveCode() {
+    if (!currentFile) {
+        setMessage("Create or open a file first.");
+        return;
+    }
+
+    const content = editorValue();
+
+    fileContents[currentFile] = content;
+
+    localStorage.setItem("secureCodeEditorContent", content);
+    localStorage.setItem("secureCodeLanguage", languageSelect.value);
+
+    if (localMode) {
+        localStorage.setItem(
+            getSafeLocalKey(currentFile),
+            content
+        );
+
+        setMessage("Saved " + currentFile + " in this browser.");
+        return;
+    }
+
+    try {
+        await api("/api/project/file", {
+            method: "PUT",
+            body: JSON.stringify({
+                name: currentFile,
+                content
+            })
+        });
+
+        setMessage("Saved " + currentFile + " successfully.");
+
+    } catch (error) {
+        setMessage("Save failed: " + error.message);
+    }
+}
+
+function changeLanguage() {
+    setEditorLanguage(languageSelect.value);
+
+    setMessage(
+        "Editor language changed to " + languageSelect.value + "."
+    );
+}
+
+function clearCode() {
+    if (!confirm("Clear the current editor content?")) return;
+
+    setEditorValue("");
+
+    if (currentFile) {
+        fileContents[currentFile] = "";
+    }
+
+    output.srcdoc = "";
+    pythonOutput.style.display = "none";
+    output.style.display = "block";
+
+    pythonResult.textContent = "";
+    pythonError.textContent = "";
+
+    setMessage("Editor cleared. Save to keep this change.");
+}
+
+function downloadCode() {
+    const code = editorValue();
+
+    const filename = currentFile ||
+        ("securecode." + ({
+            html: "html",
+            javascript: "js",
+            python: "py",
+            css: "css"
+        }[languageSelect.value] || "txt"));
+
+    const blob = new Blob(
+        [code],
+        { type: "text/plain;charset=utf-8" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = filename.split("/").pop();
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    setMessage("Downloaded " + filename);
+}
+
+/* SECURITY SCAN */
+
+async function scanSecurity() {
+    const code = editorValue();
+
+    if (!code.trim()) {
+        securityResults.textContent =
+            "Please enter code before scanning.";
+        return;
+    }
+
+    if (!getToken()) {
+        securityResults.textContent =
+            "Authentication token not found. Please log in again.";
+        return;
+    }
+
+    securityResults.textContent = "Scanning...";
+    setMessage("ASPM security scan in progress.");
+
+    try {
+        const result = await api("/api/aspm/scan", {
+            method: "POST",
+            body: JSON.stringify({
+                code,
+                language: languageSelect.value,
+                filename: currentFile
+            })
+        });
+
+        securityResults.textContent =
+            JSON.stringify(result, null, 2);
+
+        setMessage("Security scan completed.");
+
+    } catch (error) {
+        securityResults.textContent =
+            "Security scan failed: " + error.message;
+    }
+}
+
+/* RUN CODE */
+
+async function runCode() {
+    const code = editorValue();
+    const lang = languageSelect.value;
+
+    if (!code.trim()) {
+        setMessage("Please enter code first.");
+        return;
+    }
+
+    if (lang === "python") {
+        output.style.display = "none";
+        pythonOutput.style.display = "block";
+
+        pythonResult.textContent = "Running Python...";
+        pythonError.textContent = "";
+
+        try {
+            const result = await api("/api/execute/python", {
+                method: "POST",
+                body: JSON.stringify({ code })
+            });
+
+            pythonResult.textContent =
+                result.output || "(No output)";
+
+            pythonError.textContent =
+                result.error || "None";
+
+            setMessage("Python execution finished.");
+
+        } catch (error) {
+            pythonResult.textContent = "";
+            pythonError.textContent = error.message;
+            setMessage("Python execution failed.");
+        }
+
+        return;
+    }
+
+    pythonOutput.style.display = "none";
+    output.style.display = "block";
+
+    if (lang === "html") {
+        previewProject();
+        setMessage("HTML preview updated.");
+        return;
+    }
+
+    if (lang === "css") {
+        const safeCSS = code.replace(/<\/style/gi, "<\\/style");
+
+        output.srcdoc =
+            "<!DOCTYPE html><html><head><style>" +
+            safeCSS +
+            "</style></head><body>" +
+            "<h1>CSS Preview</h1>" +
+            "<p>Your CSS is applied to this page.</p>" +
+            "<button>Example Button</button>" +
+            "</body></html>";
+
+        setMessage("CSS preview updated.");
+        return;
+    }
+
+    if (lang === "javascript") {
+        /*
+         * Run JavaScript in the sandboxed preview.
+         * Do not use this as a security boundary for untrusted
+         * code on a production server.
+         */
+        const safeCode = JSON.stringify(code);
+
+        output.srcdoc =
+            '<!DOCTYPE html><html><body ' +
+            'style="background:#080d19;color:white;' +
+            'font-family:monospace;padding:16px">' +
+            '<h3>JavaScript Output</h3><pre id="logs"></pre>' +
+            '<script>(function(){' +
+            'const box=document.getElementById("logs");' +
+            'console.log=function(){' +
+            'const d=document.createElement("div");' +
+            'd.textContent=Array.from(arguments).join(" ");' +
+            'box.appendChild(d);};' +
+            'try{(new Function(' + safeCode + '))()}' +
+            'catch(e){const d=document.createElement("div");' +
+            'd.textContent="Error: "+e.message;' +
+            'box.appendChild(d);}' +
+            '})();<\/script></body></html>';
+
+        setMessage("JavaScript preview updated.");
+        return;
+    }
+
+    setMessage("Unsupported language.");
+}
+
+/* PROJECT PREVIEW */
+
+async function previewProject() {
+    let html = editorValue();
+
+    if (!currentFile.toLowerCase().endsWith(".html")) {
+        const name = prompt(
+            "HTML file name to preview:",
+            "index.html"
+        );
+
+        if (!name) return;
+
+        try {
+            const data = localMode ?
+                { content: localStorage.getItem(getSafeLocalKey(name)) || "" } :
+                await api(
+                    "/api/project/file?name=" +
+                    encodeURIComponent(name)
+                );
+
+            html = data.content || "";
+
+        } catch (error) {
+            setMessage("Could not load HTML: " + error.message);
+            return;
+        }
+    }
+
+    /*
+     * This preview inlines recognized CSS and JavaScript files.
+     * It is a convenience for local project previews, not a full
+     * browser build system or a guarantee that every asset resolves.
+     */
+    const cssNames = [
+        "style.css",
+        "styles.css",
+        "css/style.css"
+    ];
+
+    for (const name of cssNames) {
+        try {
+            const css = localMode ?
+                localStorage.getItem(getSafeLocalKey(name)) :
+                (await api(
+                    "/api/project/file?name=" +
+                    encodeURIComponent(name)
+                )).content;
+
+            if (css) {
+                const safeCSS =
+                    css.replace(/<\/style/gi, "<\\/style");
+
+                const style = "<style>" + safeCSS + "</style>";
+
+                html = html.includes("</head>") ?
+                    html.replace("</head>", style + "</head>") :
+                    style + html;
+
+                break;
+            }
+        } catch {}
+    }
+
+    const jsNames = [
+        "script.js",
+        "app.js",
+        "js/script.js"
+    ];
+
+    for (const name of jsNames) {
+        try {
+            const js = localMode ?
+                localStorage.getItem(getSafeLocalKey(name)) :
+                (await api(
+                    "/api/project/file?name=" +
+                    encodeURIComponent(name)
+                )).content;
+
+            if (js) {
+                const safeJS =
+                    js.replace(/<\/script/gi, "<\\/script");
+
+                const script = "<script>" +
+                    safeJS + "<\/script>";
+
+                html = html.includes("</body>") ?
+                    html.replace("</body>", script + "</body>") :
+                    html + script;
+
+                break;
+            }
+        } catch {}
+    }
+
+    output.srcdoc = html;
+}
+
+/* FOLDER / RENAME / DELETE */
+
+async function createFolder() {
+    const name = prompt("Enter folder name:");
+    if (!name || !name.trim()) return;
+
+    if (!getToken()) {
+        alert("Please log in first.");
+        return;
+    }
+
+    if (localMode) {
+        alert(
+            "Folder creation needs the server API. " +
+            "Connect the backend to use this feature."
+        );
+        return;
+    }
+
+    try {
+        await api("/api/project/folder", {
+            method: "POST",
+            body: JSON.stringify({ name: name.trim() })
+        });
+
+        alert("Folder created successfully.");
+        await refreshFiles();
+
+    } catch (error) {
+        alert("Folder creation failed: " + error.message);
+    }
+}
+
+async function renameItem() {
+    const oldName = prompt("Current file/folder name:");
+    if (!oldName || !oldName.trim()) return;
+
+    const newName = prompt("New file/folder name:");
+    if (!newName || !newName.trim()) return;
+
+    if (!getToken()) {
+        alert("Please log in first.");
+        return;
+    }
+
+    if (localMode) {
+        alert("Rename needs the server API.");
+        return;
+    }
+
+    try {
+        await api("/api/project/rename", {
+            method: "POST",
+            body: JSON.stringify({
+                oldName: oldName.trim(),
+                newName: newName.trim()
+            })
+        });
+
+        if (currentFile === oldName.trim()) {
+            currentFile = newName.trim();
+        }
+
+        await refreshFiles();
+        alert("Renamed successfully.");
+
+    } catch (error) {
+        alert("Rename failed: " + error.message);
+    }
+}
+
+async function deleteItem() {
+    const name = prompt("File/folder name to delete:");
+    if (!name || !name.trim()) return;
+
+    if (!confirm("Delete " + name + "?")) return;
+
+    if (!getToken()) {
+        alert("Please log in first.");
+        return;
+    }
+
+    if (localMode) {
+        const files = localFiles();
+
+        saveLocalFiles(
+            files.filter(file =>
+                file !== name.trim() &&
+                !file.startsWith(name.trim() + "/")
+            )
+        );
+
+        localStorage.removeItem(getSafeLocalKey(name.trim()));
+
+        if (currentFile === name.trim()) {
+            currentFile = "";
+            setEditorValue("");
+            currentFileLabel.textContent = "";
+        }
+
+        await refreshFiles();
+        setMessage("Deleted from browser-local files.");
+        return;
+    }
+
+    try {
+        await api("/api/project/item", {
+            method: "DELETE",
+            body: JSON.stringify({ name: name.trim() })
+        });
+
+        if (currentFile === name.trim()) {
+            currentFile = "";
+            setEditorValue("");
+            currentFileLabel.textContent = "";
+        }
+
+        await refreshFiles();
+        alert("Deleted successfully.");
+
+    } catch (error) {
+        alert("Delete failed: " + error.message);
+    }
+}
+
+/* DEPLOY */
+
+async function deployCode() {
+    const code = editorValue().trim();
+
+    if (!code) {
+        alert("No code found. Open an HTML file first.");
+        return;
+    }
+
+    if (!currentFile.toLowerCase().endsWith(".html")) {
+        alert("Please open an HTML file before deploying.");
+        return;
+    }
+
+    if (!getToken()) {
+        alert("Please log in first.");
+        return;
+    }
+
+    if (!confirm(
+        "Deploy this website using your configured backend?"
+    )) {
+        return;
+    }
+
+    try {
+        setMessage("Deploying website...");
+
+        const result = await api("/api/deploy", {
+            method: "POST",
+            body: JSON.stringify({
+                code,
+                language: "html"
+            })
+        });
+
+        if (!result.success || !result.url) {
+            throw new Error(
+                result.message || "Deployment failed."
+            );
+        }
+
+        setMessage("Deployment successful.");
+
+        alert("Website deployed successfully!\n\n" + result.url);
+
+        window.open(result.url, "_blank", "noopener,noreferrer");
+
+    } catch (error) {
+        setMessage("Deployment failed: " + error.message);
+        alert("Deployment failed: " + error.message);
+    }
+}
+
+/* KEYBOARD SHORTCUTS */
+
+document.addEventListener("keydown", function (event) {
+    if (!(event.ctrlKey || event.metaKey)) return;
+
+    const key = event.key.toLowerCase();
+
+    if (key === "s") {
+        event.preventDefault();
+        saveCode();
+    }
+});
+
+/* INITIALIZE */
+
+initializeMonaco();
+
+</script>
+</body>
+</html>
